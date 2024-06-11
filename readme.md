@@ -13,7 +13,13 @@ CREATE TABLE users (
   CONSTRAINT password_length CHECK (LENGTH(password) >= 8)  -- Enforce password length (at least 8 characters)
 );
 
-
+CREATE TABLE failed_logins (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    email VARCHAR(255) NOT NULL,
+    failed_attempts INT DEFAULT 0,
+    last_attempt TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    locked_until TIMESTAMP NULL
+);
 
 
 Then, change port number sa xampp nung mysql if kaya to port 3307 para wala na babaguhin for connect.php.
