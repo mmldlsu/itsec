@@ -49,7 +49,7 @@ if (isset($_POST['loginBtn'])) {
         $user = $result->fetch_assoc();
         $hashedPassword = $user['password'];
 
-        if ($hashedPassword === md5($upass)) {
+        if (password_verify($upass, $hashedPassword)) {
             // Authentication successful
             session_unset();
             session_start();

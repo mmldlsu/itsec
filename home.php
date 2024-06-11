@@ -1,7 +1,7 @@
 <?php
     session_start();
-    include '../connect.php';
-    if(isset($_SESSION['username'])) {
+    include 'connect.php';
+    if(isset($_SESSION['email'])) {
 ?>
 <!DOCTYPE html>
 <html>

@@ -5,7 +5,8 @@ require_once("connect.php");
 
 // Check if form is submitted
 if (isset($_POST['registerBtn'])) {
-  $fullName = mysqli_real_escape_string($conn, $_POST['full_name']);
+  $firstName = mysqli_real_escape_string($conn, $_POST['firstname']);
+  $lastName = mysqli_real_escape_string($conn, $_POST['lastname']);
   $email = mysqli_real_escape_string($conn, $_POST['email']);
   $password = mysqli_real_escape_string($conn, $_POST['password']);
 
@@ -58,8 +59,8 @@ if (isset($_POST['registerBtn'])) {
 
   // Prepare and execute SQL statement (check for errors)
   if (!isset($error)) { // If no errors during upload or validation
-    $sql = "INSERT INTO users (full_name, email, password, profile_image)
-            VALUES ('$fullName', '$email', '$hashed_password', '$profilePicture')";
+    $sql = "INSERT INTO users (first_name, last_name, email, password, profile_image)
+            VALUES ('$firstName', '$lastName','$email', '$hashed_password', '$profilePicture')";
     if ($conn->query($sql) === TRUE) {
       // Registration successful, redirect or display confirmation message
       echo "Registration Successful!"; // Success message displayed in console
