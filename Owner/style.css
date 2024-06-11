@@ -96,6 +96,7 @@ h1 {
 .registerbutton:hover{
 	box-shadow: 0 0 0 4px #215c83, 0 0 0 8px var(--btn-primary);
 }
+
 .logincard{
 	text-align: center;
 	/* Centered Text */
@@ -110,6 +111,7 @@ h1 {
 	min-width: 220px;
 	align-items: center;
 }
+
 .textfield{
 	display:grid;
 	gap: 1.5vh;
@@ -123,6 +125,7 @@ h1 {
 	background-color: #EAF7E8;
 	color: var(--btn-primary);
 }
+
 .error{
 	margin-bottom: 3vh;
 	color: white;
