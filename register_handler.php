@@ -9,8 +9,9 @@ if (isset($_POST['registerBtn'])) {
   $email = mysqli_real_escape_string($conn, $_POST['email']);
   $password = mysqli_real_escape_string($conn, $_POST['password']);
 
-  // **Commented out: Password Hashing**
-  // $hashedPassword = password_hash($password, PASSWORD_DEFAULT);
+  $cost = 12; // Adjust cost as needed (higher = slower but more secure) FOR PASSWORD HASH
+  $hashed_password = password_hash($password, PASSWORD_ARGON2ID, ['cost' => $cost]);
+
 
   // Handle profile picture upload (if applicable)
   $profilePicture = "";
@@ -58,7 +59,7 @@ if (isset($_POST['registerBtn'])) {
   // Prepare and execute SQL statement (check for errors)
   if (!isset($error)) { // If no errors during upload or validation
     $sql = "INSERT INTO users (full_name, email, password, profile_image)
-            VALUES ('$fullName', '$email', '$password', '$profilePicture')";
+            VALUES ('$fullName', '$email', '$hashed_password', '$profilePicture')";
     if ($conn->query($sql) === TRUE) {
       // Registration successful, redirect or display confirmation message
       echo "Registration Successful!"; // Success message displayed in console
