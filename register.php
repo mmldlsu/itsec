@@ -103,7 +103,7 @@
                         <p id="digit-criteria" style="color: red;">Password must contain at least one digit.</p>
                         <p id="special-char-criteria" style="color: red;">Password must contain at least one special character.</p>
                     </div>
-                    <input type="file" name="profile_picture" accept="image/*" />
+                    <input type="file" name="profile_picture" accept="image/*" required/>
                 </div>
 
                 <button type="submit" class="loginsubmitbutton" name="registerBtn">REGISTER</button>

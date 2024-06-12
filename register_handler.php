@@ -13,47 +13,33 @@ if (isset($_POST['registerBtn'])) {
   $cost = 12; // Adjust cost as needed (higher = slower but more secure) FOR PASSWORD HASH
   $hashed_password = password_hash($password, PASSWORD_ARGON2ID, ['cost' => $cost]);
 
-
   // Handle profile picture upload (if applicable)
   $profilePicture = "";
   if (isset($_FILES['profile_picture']) && $_FILES['profile_picture']['error'] === 0) {
     $targetDir = "uploads/"; // Adjust upload directory path
-    $targetFile = $targetDir . basename($_FILES["profile_picture"]["name"]);
-    $fileType = strtolower(pathinfo($targetFile,PATHINFO_EXTENSION));
-
-    // Validate image file type
-    if(isset($_POST["profile_picture"]) && !empty($_FILES["profile_picture"]["tmp_name"])) {
-      $check = getimagesize($_FILES["profile_picture"]["tmp_name"]);
-      if($check !== false) {
-        echo "File is an image - " . $check["mime"] . ".";
-        // Proceed with uploading the image
-      } else {
-        echo "File is not an image.";
-        $error = "Only image files are allowed.";  // Set error message
-      }
-    }
+    $fileType = strtolower(pathinfo($_FILES["profile_picture"]["name"], PATHINFO_EXTENSION));
 
     // Check if image file is a real image
-    if (isset($error)) {
-      // Display error message (if any)
-    } else {
-      // Check if file already exists (optional)
+    $imageType = exif_imagetype($_FILES['profile_picture']['tmp_name']);
+    $allowedTypes = [IMAGETYPE_JPEG, IMAGETYPE_PNG];
+
+    if (in_array($imageType, $allowedTypes)) {
+      // Create a unique file name
+      $uniqueName = uniqid('', true) . '.' . $fileType;
+      $targetFile = $targetDir . $uniqueName;
+
+      // Proceed with uploading the image
       if (file_exists($targetFile)) {
         $error = "Sorry, file already exists.";  // Set error message
       } else {
-        // Allow certain file formats
-        if($fileType != "jpg" && $fileType != "png" && $fileType != "jpeg"
-        && $fileType != "gif" ) {
-          $error = "Sorry, only JPG, JPEG, PNG & GIF files are allowed.";  // Set error message
+        if (move_uploaded_file($_FILES["profile_picture"]["tmp_name"], $targetFile)) {
+          $profilePicture = $targetFile;
         } else {
-          // Upload the image if no errors
-          if (move_uploaded_file($_FILES["profile_picture"]["tmp_name"], $targetFile)) {
-            $profilePicture = $targetDir . basename( $_FILES["profile_picture"]["name"]);
-          } else {
-            $error = "Sorry, there was an error uploading your file.";  // Set error message
-          }
+          $error = "Sorry, there was an error uploading your file.";  // Set error message
         }
       }
+    } else {
+      $error = "Only JPG, JPEG & PNG files are allowed.";  // Set error message
     }
   }
 
@@ -65,17 +51,18 @@ if (isset($_POST['registerBtn'])) {
       // Registration successful, redirect or display confirmation message
       echo "Registration Successful!"; // Success message displayed in console
       header("Location: index.php"); // Redirect to index.php
+      exit();
     } else {
       // Registration failed, display error message
-      echo "Error: " . $sql . "<br>" . $conn->error;
+      $error = "Error: " . $sql . "<br>" . $conn->error;
+      header("Location: register.php?error=" . urlencode($error)); // Redirect to register.php with error message
+      exit();
     }
   } else {
     // Display any errors encountered during upload or validation
-    echo $error;
+    header("Location: register.php?error=" . urlencode($error)); // Redirect to register.php with error message
+    exit();
   }
 }
-
-// **Important Note:** Consider adding closing the database connection after processing 
-// (optional depending on your application structure). You can use `mysqli_close($conn);`
 
 ?>
