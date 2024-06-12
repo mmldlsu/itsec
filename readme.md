@@ -6,7 +6,8 @@ USE itsecwb;  -- Use the newly created database
 
 CREATE TABLE users (
   user_id INT AUTO_INCREMENT PRIMARY KEY,  -- Unique identifier for each user (auto-incrementing)
-  full_name VARCHAR(255) NOT NULL,  -- User's full name
+  first_name VARCHAR(255) NOT NULL,  -- User's first name
+  last_name VARCHAR(255) NOT NULL,  -- User's first name
   email VARCHAR(255) NOT NULL UNIQUE,  -- User's email address (unique to prevent duplicates)
   password VARCHAR(255) NOT NULL,  -- User's password (store securely using a hashing algorithm)
   profile_image VARCHAR(255) DEFAULT NULL,  -- URL or path to the user's profile image (optional)
