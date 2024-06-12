@@ -38,19 +38,29 @@
         specialCharCriteria.style.color = specialCharRegex.test(password) ? "green" : "red";
     }
 
+    function validateEmail() {
+        var email = document.getElementById("email").value;
+        var emailError = document.getElementById("email-error");
+        var emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+
+        emailError.style.display = email && !emailRegex.test(email) ? "block" : "none";
+    }
+
     function validateForm() {
         var lengthCriteria = document.getElementById("length-criteria");
         var uppercaseCriteria = document.getElementById("uppercase-criteria");
         var lowercaseCriteria = document.getElementById("lowercase-criteria");
         var digitCriteria = document.getElementById("digit-criteria");
         var specialCharCriteria = document.getElementById("special-char-criteria");
+        var emailError = document.getElementById("email-error");
 
         return (
             lengthCriteria.style.color === "green" &&
             uppercaseCriteria.style.color === "green" &&
             lowercaseCriteria.style.color === "green" &&
             digitCriteria.style.color === "green" &&
-            specialCharCriteria.style.color === "green"
+            specialCharCriteria.style.color === "green" &&
+            emailError.style.display === "none"
         );
     }
     </script>
@@ -74,16 +84,16 @@
         width: 100%;
     }
 
-    #password-error {
+    #password-error, #email-error {
         display: none;
+        color: red;
     }
     </style>
 </head>
 <body>
     <div class="loginwrapper">
         <div class="logincard">
-            <form action="register_handler.php" method="post" enctype="multipart/form-data"
-                onsubmit="return validateForm()">
+            <form action="register_handler.php" method="post" enctype="multipart/form-data" onsubmit="return validateForm()">
                 <h1>Register</h1>
 
                 <?php if (isset($_GET['error'])) { ?>
@@ -93,9 +103,9 @@
                 <div class="textfield">
                     <input type="text" name="firstname" placeholder="Firstname" required />
                     <input type="text" name="lastname" placeholder="Lastname" required />
-                    <input type="email" name="email" placeholder="Email" required />
-                    <input type="password" id="password" name="password" placeholder="Password" required
-                        onkeyup="validatePassword()" />
+                    <input type="email" id="email" name="email" placeholder="Email" required onkeyup="validateEmail()" />
+                    <div id="email-error">Invalid email format.</div>
+                    <input type="password" id="password" name="password" placeholder="Password" required onkeyup="validatePassword()" />
                     <div id="password-error">
                         <p id="length-criteria" style="color: red;">Password must be at least 8 characters long.</p>
                         <p id="uppercase-criteria" style="color: red;">Password must contain at least one uppercase letter.</p>
