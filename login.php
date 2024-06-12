@@ -56,9 +56,8 @@ if (isset($_POST['loginBtn'])) {
             $_SESSION['id']   = $user['user_id'];
             // $_SESSION['username']   = $user['username'];
              $_SESSION['email']   = $user['email'];
-             $_SESSION['full_name']  = $user['full_name'];
-           //  $_SESSION['firstname']  = $user['firstName'];
-           //  $_SESSION['lastname']   = $user['lastName'];
+             $_SESSION['first_name']  = $user['first_name'];
+             $_SESSION['last_name']   = $user['last_name'];
             // $_SESSION['role']       = $user['role'];
             $_SESSION['profile_image']   = $user['profile_image'];
 
