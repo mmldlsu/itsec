@@ -56,8 +56,8 @@
     <?php include 'navbar.php' ?>
     <main>
         <div class="notifications">
-            <h2>Home Page</h2>
-            <p><b>Hello, <?= $_SESSION['first_name'] ?></b></p>
+            <h2>Admin Page</h2>
+            <p><b>Hello, admin</b></p>
             <img src="<?= $_SESSION['profile_image'] ?>" class="img-thumbnail">
         </div>
     </main>

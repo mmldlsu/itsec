@@ -19,8 +19,8 @@ CREATE TABLE failed_logins (
     email VARCHAR(255) NOT NULL,
     failed_attempts INT DEFAULT 0,
     last_attempt TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    locked_until TIMESTAMP NULL
+    locked_until TIMESTAMP NULL,
+    FOREIGN KEY (email) REFERENCES users(email)
 );
-
 
 Then, change port number sa xampp nung mysql if kaya to port 3307 para wala na babaguhin for connect.php.

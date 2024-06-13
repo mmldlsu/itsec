@@ -1,4 +1,5 @@
 <?php
+date_default_timezone_set('Asia/Manila');
 session_start();
 include "connect.php";
 
@@ -22,7 +23,7 @@ if (isset($_POST['loginBtn'])) {
     }
 
     // Check if the user is locked out
-    $stmt = $conn->prepare("SELECT failed_attempts, locked_until FROM failed_logins WHERE email = ?");
+    $stmt = $conn->prepare("SELECT failed_attempts, last_attempt, locked_until FROM failed_logins WHERE email = ? ORDER BY last_attempt DESC LIMIT 1");
     $stmt->bind_param("s", $email);
     $stmt->execute();
     $result = $stmt->get_result();
@@ -31,10 +32,18 @@ if (isset($_POST['loginBtn'])) {
     if ($failedLogin) {
         $currentTimestamp = time();
         $lockedUntilTimestamp = strtotime($failedLogin['locked_until']);
+        $lastAttemptTimestamp = strtotime($failedLogin['last_attempt']);
+        
+        // Check lockout status
         if ($currentTimestamp < $lockedUntilTimestamp) {
             $lockoutMinutes = ceil(($lockedUntilTimestamp - $currentTimestamp) / 60);
             header("Location: index.php?error=Account locked. Try again in $lockoutMinutes minutes.");
             exit();
+        }
+
+        // Reset failed attempts if the last attempt was more than 5 minutes ago
+        if ($currentTimestamp - $lastAttemptTimestamp > 300) {
+            $failedLogin['failed_attempts'] = 0;
         }
     }
 
@@ -54,45 +63,32 @@ if (isset($_POST['loginBtn'])) {
             session_unset();
             session_start();
             $_SESSION['id']   = $user['user_id'];
-            // $_SESSION['username']   = $user['username'];
-             $_SESSION['email']   = $user['email'];
-             $_SESSION['first_name']  = $user['first_name'];
-             $_SESSION['last_name']   = $user['last_name'];
-            // $_SESSION['role']       = $user['role'];
+            $_SESSION['email']   = $user['email'];
+            $_SESSION['first_name']  = $user['first_name'];
+            $_SESSION['last_name']   = $user['last_name'];
             $_SESSION['profile_image']   = $user['profile_image'];
 
-            // Reset failed login attempts
+            // Delete all failed login attempts
             $stmt = $conn->prepare("DELETE FROM failed_logins WHERE email = ?");
             $stmt->bind_param("s", $email);
             $stmt->execute();
 
             // Redirect to the home page after successful login
-            header("Location: home.php");
-
-            /*
-            switch ($_SESSION['role']) {
-                case "Admin":
-                    header("Location: Owner/notification.php"); // Subject to change
-                    break;
-                case "Inventory":
-                    header("Location: Controller/manstockcount.php"); // Subject to change
-                    break;
-                case "Chef":
-                    header("Location: Chef/viewRecipe.php"); // Subject to change
-                    break;
-                case "Cashier":
-                    header("Location: Cashier/cashier.php");
-                    break;
-            } */
+            if($_SESSION['email'] == "admin@gmail.com"){
+                header("Location: adminhome.php");
+            }
+            else{
+                header("Location: home.php");
+            }
         } else {
             // Incorrect password
-            recordFailedLogin($conn, $email);
-            header("Location: index.php?error=Invalid password");
+            recordFailedLogin($conn, $email, $failedLogin['failed_attempts'] + 1);
+            header("Location: index.php?error=Invalid Credentials");
             exit();
         }
     } else {
         // User not found
-        header("Location: index.php?error=Email not found");
+        header("Location: index.php?error=Invalid Credentials");
         exit();
     }
 } else {
@@ -100,27 +96,32 @@ if (isset($_POST['loginBtn'])) {
     exit();
 }
 
-function recordFailedLogin($conn, $email) {
-    $stmt = $conn->prepare("SELECT failed_attempts FROM failed_logins WHERE email = ?");
+function recordFailedLogin($conn, $email, $failedAttempts) {
+    $currentTimestamp = time();
+    $stmt = $conn->prepare("SELECT last_attempt FROM failed_logins WHERE email = ? ORDER BY last_attempt DESC LIMIT 1");
     $stmt->bind_param("s", $email);
     $stmt->execute();
     $result = $stmt->get_result();
-    $failedLogin = $result->fetch_assoc();
+    $lastLogin = $result->fetch_assoc();
+    $lastAttemptTimestamp = strtotime($lastLogin['last_attempt']);
 
-    if ($failedLogin) {
-        $failedAttempts = $failedLogin['failed_attempts'] + 1;
+    if ($currentTimestamp - $lastAttemptTimestamp > 300) {
+        // Insert a new row if the last attempt was more than 5 minutes ago
+        $stmt = $conn->prepare("INSERT INTO failed_logins (email, failed_attempts, last_attempt, locked_until) VALUES (?, 1, NOW(), NULL)");
+        $stmt->bind_param("s", $email);
+    } else {
+        // Update the existing row
+        $lockoutDuration = 0;
         if ($failedAttempts >= 5) {
             $lockoutDuration = 15; // Lockout duration in minutes
             $lockedUntil = date("Y-m-d H:i:s", strtotime("+$lockoutDuration minutes"));
-            $stmt = $conn->prepare("UPDATE failed_logins SET failed_attempts = ?, locked_until = ? WHERE email = ?");
-            $stmt->bind_param("iss", $failedAttempts, $lockedUntil, $email);
+            $stmt = $conn->prepare("UPDATE failed_logins SET failed_attempts = ?, locked_until = ?, last_attempt = NOW() WHERE email = ?");
+            $stmt = $conn->prepare("UPDATE failed_logins SET failed_attempts = ?, locked_until = ?, last_attempt = NOW() WHERE email = ? AND last_attempt = (SELECT MAX(last_attempt) FROM failed_logins WHERE email = ?)");
+            $stmt->bind_param("isss", $failedAttempts, $lockedUntil, $email, $email);
         } else {
-            $stmt = $conn->prepare("UPDATE failed_logins SET failed_attempts = ? WHERE email = ?");
-            $stmt->bind_param("is", $failedAttempts, $email);
+            $stmt = $conn->prepare("UPDATE failed_logins SET failed_attempts = ?, last_attempt = NOW() WHERE email = ? AND last_attempt = (SELECT MAX(last_attempt) FROM failed_logins WHERE email = ?)");
+            $stmt->bind_param("iss", $failedAttempts, $email, $email);
         }
-    } else {
-        $stmt = $conn->prepare("INSERT INTO failed_logins (email, failed_attempts) VALUES (?, 1)");
-        $stmt->bind_param("s", $email);
     }
     $stmt->execute();
 }
