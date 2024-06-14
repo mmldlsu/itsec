@@ -1,0 +1,26 @@
+1. Install XAMPP:
+	- Download and install XAMPP from the official website (https://www.apachefriends.org/index.html).
+	- Follow the installation instructions for your operating system.
+	
+2. Unzip the file:
+	- Unzip ITSECWB - Milestone 1.zip
+	
+3. 	Database Setup:
+	- Open the XAMPP Control Panel and start the Apache and MySQL services.
+	- Access phpMyAdmin through http://localhost/phpmyadmin in the web browser.
+	- On the sidebard, click "New".
+	- Enter the name of the database "itsecwb" and click "Create".
+	- Click database "itsecwb" which is located on the sidebar.
+	- On the tabs located at the top of the page, select "Import".
+	- On the first section of the page which is "File to import", click "Choose File"
+	- Go to the folder of the unzipped ITSECWB - Milestone 1 and then select the "itsec" folder.
+	- In the "itsec" folder, select itsecwb.sql
+	- Click "Import" on the bottom part of the page.
+	
+4. Copy the project files:
+	- Locate where the unzipped ITSECWB - Milestone 1.zip folder is located. The name of the folder is "itsec".
+	- Copy the folder.
+	- Paste the folder in this directory: C:\xampp\htdocs
+	
+5. Locally run the web app:
+	- Open your web browser and navigate to http://localhost/itsec to access the web app.
