@@ -2,6 +2,9 @@
     session_start();
     include 'connect.php';
     if(isset($_SESSION['email'])) {
+        if($_SESSION['email'] != "admin@gmail.com") {
+            header("Location: home.php");
+        }
 ?>
 <!DOCTYPE html>
 <html>
