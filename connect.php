@@ -8,6 +8,15 @@ define('DB_USER', 'root'); // Replace with your MySQL username
 define('DB_PASSWORD', ''); // Replace with your MySQL password
 define('DB_NAME', 'itsecwb'); // Replace with your database name
 
+
+// cloud db
+/*
+define('DB_HOST', 'itsecwb-cap-2233.f.aivencloud.com:10849'); // Replace with your MySQL host
+define('DB_USER', 'avnadmin'); // Replace with your MySQL username
+define('DB_PASSWORD', 'AVNS_967cdqGleFe-rR02H-s'); // Replace with your MySQL password
+define('DB_NAME', 'itsecwb'); // Replace with your database name
+*/
+
 $conn = mysqli_connect(DB_HOST, DB_USER, DB_PASSWORD, DB_NAME);
 
 if (!$conn) {
