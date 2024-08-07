@@ -3,7 +3,7 @@
 
 //     $conn = mysqli_select_db($DBConnect, 'itsecwb');
 
-define('DB_HOST', '127.0.0.1:3307'); // Replace with your MySQL host
+define('DB_HOST', '127.0.0.1:3306'); // Replace with your MySQL host
 define('DB_USER', 'root'); // Replace with your MySQL username
 define('DB_PASSWORD', ''); // Replace with your MySQL password
 define('DB_NAME', 'itsecwb'); // Replace with your database name
