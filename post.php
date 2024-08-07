@@ -2,7 +2,8 @@
 session_start();
 include 'connect.php'; // Ensure connection is included
 
-function createPost($userEmail, $content, $numericInput1, $numericInput2) {
+function createPost($userEmail, $content, $numericInput1, $numericInput2)
+{
     global $conn;
 
     if (!$conn) {
@@ -25,7 +26,8 @@ function createPost($userEmail, $content, $numericInput1, $numericInput2) {
     $stmt->close();
 }
 
-function getPosts() {
+function getPosts()
+{
     global $conn;
     if (!$conn) {
         die("Connection failed: " . mysqli_connect_error());
@@ -41,7 +43,8 @@ function getPosts() {
     return $result->fetch_all(MYSQLI_ASSOC);
 }
 
-function editPost($postId, $content, $numericInput1, $numericInput2) {
+function editPost($postId, $content, $numericInput1, $numericInput2)
+{
     global $conn;
     if (!$conn) {
         die("Connection failed: " . mysqli_connect_error());
@@ -53,18 +56,37 @@ function editPost($postId, $content, $numericInput1, $numericInput2) {
     $stmt->close();
 }
 
+function deletePost($postId)
+{
+    global $conn;
+    if (!$conn) {
+        die("Connection failed: " . mysqli_connect_error());
+    }
+
+    $stmt = $conn->prepare("DELETE FROM posts WHERE post_id = ?");
+    $stmt->bind_param("i", $postId);
+    $stmt->execute();
+    $stmt->close();
+}
+
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if (isset($_POST['create_post'])) {
-        $content = $_POST['content'];
-        $numericInput1 = $_POST['numeric_input1'];
-        $numericInput2 = $_POST['numeric_input2'];
+        $content = trim($_POST['content']);
+        $numericInput1 = (int) $_POST['numeric_input1'];
+        $numericInput2 = (int) $_POST['numeric_input2'];
         $userEmail = $_SESSION['email'];
+
+        // Sanitize and validate input
+        if (empty($content) || $numericInput1 < 0 || $numericInput2 < 0) {
+            die("Invalid input.");
+        }
+
         createPost($userEmail, $content, $numericInput1, $numericInput2);
     } elseif (isset($_POST['edit_post'])) {
-        $postId = $_POST['post_id'];
-        $content = $_POST['content'];
-        $numericInput1 = $_POST['numeric_input1'];
-        $numericInput2 = $_POST['numeric_input2'];
+        $postId = (int) $_POST['post_id'];
+        $content = trim($_POST['content']);
+        $numericInput1 = (int) $_POST['numeric_input1'];
+        $numericInput2 = (int) $_POST['numeric_input2'];
 
         // Check if the post exists and if the user is the author of the post
         $stmt = $conn->prepare("SELECT users.email FROM posts JOIN users ON posts.user_id = users.user_id WHERE post_id = ?");
@@ -75,13 +97,34 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $stmt->close();
 
         if ($post && $post['email'] == $_SESSION['email']) {
+            // Sanitize and validate input
+            if (empty($content) || $numericInput1 < 0 || $numericInput2 < 0) {
+                die("Invalid input.");
+            }
+
             editPost($postId, $content, $numericInput1, $numericInput2);
         } else {
-            // Unauthorized access
+            die("Unauthorized.");
+        }
+    } elseif (isset($_POST['delete_post'])) {
+        $postId = (int) $_POST['post_id'];
+
+        // Check if the post exists and if the user is the author of the post
+        $stmt = $conn->prepare("SELECT users.email FROM posts JOIN users ON posts.user_id = users.user_id WHERE post_id = ?");
+        $stmt->bind_param("i", $postId);
+        $stmt->execute();
+        $result = $stmt->get_result();
+        $post = $result->fetch_assoc();
+        $stmt->close();
+
+        if ($post && $post['email'] == $_SESSION['email']) {
+            deletePost($postId);
+        } else {
             die("Unauthorized.");
         }
     }
-    header('Location: home.php');
+    
+    header("Location: home.php");
     exit();
 }
 ?>
