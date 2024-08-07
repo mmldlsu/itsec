@@ -67,6 +67,7 @@ if (isset($_POST['loginBtn'])) {
             $_SESSION['first_name']  = $user['first_name'];
             $_SESSION['last_name']   = $user['last_name'];
             $_SESSION['profile_image']   = $user['profile_image'];
+            $_SESSION['role']   = $user['role'];
 
             // Redirect to the home page after successful login
             if($_SESSION['email'] == "admin@gmail.com"){
