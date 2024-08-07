@@ -1,0 +1,2 @@
+[2024-08-07 20:51:29] [WARNING] [evt.category: authentication] [evt.outcome: fail] [network.client.ip: 127.0.0.1]: Authorization attempt for non-existent user: asdjaj@gmail.com
+[2024-08-07 20:51:48] [INFO] [evt.category: authentication] [evt.outcome: success] [network.client.ip: 127.0.0.1]: Authorization successful for user: randy@gmail.com
