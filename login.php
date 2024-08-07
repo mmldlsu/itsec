@@ -68,11 +68,6 @@ if (isset($_POST['loginBtn'])) {
             $_SESSION['last_name']   = $user['last_name'];
             $_SESSION['profile_image']   = $user['profile_image'];
 
-            // Delete all failed login attempts
-            $stmt = $conn->prepare("DELETE FROM failed_logins WHERE email = ?");
-            $stmt->bind_param("s", $email);
-            $stmt->execute();
-
             // Redirect to the home page after successful login
             if($_SESSION['email'] == "admin@gmail.com"){
                 header("Location: adminhome.php");
@@ -97,32 +92,38 @@ if (isset($_POST['loginBtn'])) {
 }
 
 function recordFailedLogin($conn, $email, $failedAttempts) {
-    $currentTimestamp = time();
+    $currentTimestamp = date('Y-m-d H:i:s'); // Get the current timestamp
+
+    // Retrieve the last attempt timestamp
     $stmt = $conn->prepare("SELECT last_attempt FROM failed_logins WHERE email = ? ORDER BY last_attempt DESC LIMIT 1");
     $stmt->bind_param("s", $email);
     $stmt->execute();
     $result = $stmt->get_result();
     $lastLogin = $result->fetch_assoc();
-    $lastAttemptTimestamp = strtotime($lastLogin['last_attempt']);
+    $lastAttemptTimestamp = isset($lastLogin) ? strtotime($lastLogin['last_attempt']) : 0;
 
-    if ($currentTimestamp - $lastAttemptTimestamp > 300) {
+    // Check if the last attempt was more than 5 minutes ago
+    if (time() - $lastAttemptTimestamp > 300) {
         // Insert a new row if the last attempt was more than 5 minutes ago
-        $stmt = $conn->prepare("INSERT INTO failed_logins (email, failed_attempts, last_attempt, locked_until) VALUES (?, 1, NOW(), NULL)");
-        $stmt->bind_param("s", $email);
+        $stmt = $conn->prepare("INSERT INTO failed_logins (email, failed_attempts, last_attempt, locked_until) VALUES (?, 1, ?, NULL)");
+        $stmt->bind_param("ss", $email, $currentTimestamp);
     } else {
         // Update the existing row
         $lockoutDuration = 0;
         if ($failedAttempts >= 5) {
             $lockoutDuration = 15; // Lockout duration in minutes
             $lockedUntil = date("Y-m-d H:i:s", strtotime("+$lockoutDuration minutes"));
-            $stmt = $conn->prepare("UPDATE failed_logins SET failed_attempts = ?, locked_until = ?, last_attempt = NOW() WHERE email = ?");
-            $stmt = $conn->prepare("UPDATE failed_logins SET failed_attempts = ?, locked_until = ?, last_attempt = NOW() WHERE email = ? AND last_attempt = (SELECT MAX(last_attempt) FROM failed_logins WHERE email = ?)");
-            $stmt->bind_param("isss", $failedAttempts, $lockedUntil, $email, $email);
+            // Find the most recent record for update
+            $stmt = $conn->prepare("UPDATE failed_logins SET failed_attempts = ?, locked_until = ?, last_attempt = ? WHERE email = ? AND last_attempt = ?");
+            $stmt->bind_param("issss", $failedAttempts, $lockedUntil, $currentTimestamp, $email, $lastLogin['last_attempt']);
         } else {
-            $stmt = $conn->prepare("UPDATE failed_logins SET failed_attempts = ?, last_attempt = NOW() WHERE email = ? AND last_attempt = (SELECT MAX(last_attempt) FROM failed_logins WHERE email = ?)");
-            $stmt->bind_param("iss", $failedAttempts, $email, $email);
+            // Find the most recent record for update
+            $stmt = $conn->prepare("UPDATE failed_logins SET failed_attempts = ?, last_attempt = ? WHERE email = ? AND last_attempt = ?");
+            $stmt->bind_param("ssss", $failedAttempts, $currentTimestamp, $email, $lastLogin['last_attempt']);
         }
     }
     $stmt->execute();
 }
+
+
 ?>
