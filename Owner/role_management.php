@@ -1,7 +1,7 @@
 <?php
     session_start();
     include '../connect.php';
-    if(isset($_SESSION['username']) && isset($_SESSION['role'])) {
+    if(isset($_SESSION['role'])) {
         if ($_SESSION['role'] === 'Chef') header("Location: ../Chef/viewRecipe.php");
         if ($_SESSION['role'] === 'Cashier') header("Location: ../Cashier/cashier.php");
         if ($_SESSION['role'] === 'Inventory') header("Location: ../Controller/manstockcount.php");
@@ -23,20 +23,20 @@
             $employeeid = $_POST['employeeid'];
                 if(isset($_POST['update'])) {
                     $sql = "
-                    UPDATE user SET role='$newrole' WHERE employeeID='$employeeid';";
-                    $records = mysqli_query($DBConnect, $sql) or die(mysqli_error($DBConnect));
+                    UPDATE users SET role='$newrole' WHERE user_id='$employeeid';";
+                    $records = mysqli_query($conn, $sql) or die(mysqli_error($conn));
                 }
                 if(isset($_POST['terminate'])) {
-                    mysqli_query($DBConnect, "UPDATE user SET terminateDate = NOW() WHERE employeeID='$employeeid';");
+                    mysqli_query($conn, "UPDATE users SET status = 'Deactivated' WHERE user_id='$employeeid';");
                     echo '<script>window.location.href = "role_management.php";</script>';
                 }
         }
             $sql = "
-            SELECT employeeID, firstName, lastName, role
-            FROM user
-            WHERE terminateDate IS NULL
-            ORDER BY employeeID;";
-            $records = mysqli_query($DBConnect, $sql) or die(mysqli_error($DBConnect));
+            SELECT user_id, first_name, last_name, role
+            FROM users
+            WHERE status = 'Active'
+            ORDER BY user_id;";
+            $records = mysqli_query($conn, $sql) or die(mysqli_error($conn));
     ?>
     <div class="roleview">
         <h1>List of Employees</h1>
@@ -51,9 +51,9 @@
     <?php
         while($wow = mysqli_fetch_array($records))
             {
-                $EMPLOYEE_ID = $wow['employeeID'];
-                $FIRST_NAME = $wow['firstName'];
-                $LAST_NAME = $wow['lastName'];
+                $EMPLOYEE_ID = $wow['user_id'];
+                $FIRST_NAME = $wow['first_name'];
+                $LAST_NAME = $wow['last_name'];
                 $ROLE = $wow['role'];
     ?>        
         <tr>  
@@ -79,7 +79,7 @@
         }
     }
     else {
-        header("Location: ../index.php");
+        header("Location: ../home.php");
         exit();
     }
 ?>

@@ -1,7 +1,7 @@
 <?php
     session_start();
     include '../connect.php';
-    if(isset($_SESSION['username']) && isset($_SESSION['role'])) {
+    if(isset($_SESSION['role'])) {
         if ($_SESSION['role'] === 'Chef') header("Location: ../Chef/viewRecipe.php");
         if ($_SESSION['role'] === 'Cashier') header("Location: ../Cashier/cashier.php");
         if ($_SESSION['role'] === 'Inventory') header("Location: ../Controller/manstockcount.php");
@@ -100,7 +100,7 @@
         }
     }
     else {
-        header("Location: ../index.php");
+        header("Location: ../home.php");
         exit();
     }
 ?>

@@ -1,10 +1,11 @@
 <?php
     session_start();
     include 'connect.php';
-    if(isset($_SESSION['email'])) {
-        if($_SESSION['email'] != "admin@gmail.com") {
-            header("Location: home.php");
-        }
+    if(isset($_SESSION['role'])) {
+        if ($_SESSION['role'] === 'Chef') header("Location: ../Chef/viewRecipe.php");
+        if ($_SESSION['role'] === 'Cashier') header("Location: ../Cashier/cashier.php");
+        if ($_SESSION['role'] === 'Inventory') header("Location: ../Controller/manstockcount.php");
+        else if ($_SESSION['role'] === 'Admin') {
 ?>
 <!DOCTYPE html>
 <html>
@@ -67,10 +68,10 @@
 </body>
 </html>
 <?php
-        
+        }
     }
     else {
-        header("Location: index.php");
+        header("Location: ../index.php");
         exit();
     }
 ?>
