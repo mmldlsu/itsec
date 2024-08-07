@@ -4,7 +4,8 @@ session_start();
 include "connect.php";
 
 function logMessage($level, $message, $usr_id = null, $evt_category = null, $evt_outcome = null, $network_client_ip = null) {
-    $logDir = __DIR__ . '/logs/';
+ #   $logDir = __DIR__ . '/logs/';
+    $logDir = 'C:/xampp/itsec-logs/';  
     $logFile = $logDir . 'authorization.log';
 
     if (!file_exists($logDir)) {
