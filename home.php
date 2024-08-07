@@ -187,6 +187,12 @@ if (isset($_SESSION['email'])) {
             .modal-content button:hover {
                 background: #0d1a2b;
             }
+            .img-thumbnail {
+                width: 200px;
+                height: 200px;
+                border-radius: 50%;
+                object-fit: cover;
+            }
         </style>
         <link rel="stylesheet" type="text/css" href="style.css">
         <script src="https://kit.fontawesome.com/yourcode.js" crossorigin="anonymous"></script>
