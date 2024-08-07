@@ -1,7 +1,7 @@
 <?php
     session_start();
     include '../connect.php';
-    if(isset($_SESSION['username']) && isset($_SESSION['role'])) {
+    if(isset($_SESSION['role'])) {
         if ($_SESSION['role'] === 'Chef') header("Location: ../Chef/viewRecipe.php");
         if ($_SESSION['role'] === 'Cashier') header("Location: ../Cashier/cashier.php");
         if ($_SESSION['role'] === 'Inventory') header("Location: ../Controller/manstockcount.php");
@@ -20,15 +20,15 @@
 			$empid = $_POST['employee_id'];
 	
 			$sql = "
-			SELECT firstName, lastName, role
-			FROM   user
-			WHERE  employeeID = $empid;";
-			$records = mysqli_query($DBConnect, $sql) or die(mysqli_error($DBConnect));
+			SELECT first_name, last_name, role
+			FROM   users
+			WHERE  user_id = $empid;";
+			$records = mysqli_query($conn, $sql) or die(mysqli_error($conn));
 			
 			while($wow = mysqli_fetch_array($records))
 			{
-				$FIRST_NAME = $wow['firstName'];
-				$LAST_NAME = $wow['lastName'];
+				$FIRST_NAME = $wow['first_name'];
+				$LAST_NAME = $wow['last_name'];
 				$ROLE = $wow['role'];
 			}
 	?>		
@@ -52,9 +52,10 @@
 									<option value='Cashier' style="color: black;">Cashier</option>
 									<option value='Inventory' style="color: black;">Inventory</option>
 									<option value='Admin' style="color: black;">Admin</option>
+									<option value='User' style="color: black;">User</option>
 								</select>
 								<button type="submit" name="update">Update</button>
-								<button name="terminate" value="terminate" style="background: rgb(251,0,0); color: white;">Terminate</button>
+								<button name="terminate" value="terminate" style="background: rgb(251,0,0); color: white;">Deactivate Account</button>
 							</td>
 					</tr>
 				</form>

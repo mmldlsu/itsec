@@ -3,6 +3,44 @@ date_default_timezone_set('Asia/Manila');
 session_start();
 include "connect.php";
 
+function logMessage($level, $message, $usr_id = null, $evt_category = null, $evt_outcome = null, $network_client_ip = null) {
+    $logDir = __DIR__ . '/logs/';
+    $logFile = $logDir . 'authorization.log';
+
+    if (!file_exists($logDir)) {
+        mkdir($logDir, 0755, true);
+    }
+
+    $fileExists = file_exists($logFile);
+
+    $date = date('Y-m-d H:i:s');
+    
+    // Constructing the log entry
+    $logEntry = "[$date] [$level]";
+    
+    if ($usr_id) {
+        $logEntry .= " [usr.id: $usr_id]";
+    }
+    if ($evt_category) {
+        $logEntry .= " [evt.category: $evt_category]";
+    }
+    if ($evt_outcome) {
+        $logEntry .= " [evt.outcome: $evt_outcome]";
+    }
+    if ($network_client_ip) {
+        $logEntry .= " [network.client.ip: $network_client_ip]";
+    }
+    
+    $logEntry .= ": $message" . PHP_EOL;
+
+    file_put_contents($logFile, $logEntry, FILE_APPEND | LOCK_EX);
+
+    if (!$fileExists) {
+        chmod($logFile, 0644);
+    }
+}
+
+
 if (isset($_POST['loginBtn'])) {
     $email = mysqli_real_escape_string($conn, $_POST['email']);
     $upass = mysqli_real_escape_string($conn, $_POST['password']);
@@ -69,6 +107,21 @@ if (isset($_POST['loginBtn'])) {
             $_SESSION['profile_image']   = $user['profile_image'];
             $_SESSION['role']   = $user['role'];
 
+            logMessage(
+                'INFO', 
+                'Authorization successful for user: ' . $email, 
+                $userId, 
+                'authentication', 
+                'success', 
+                $_SERVER['REMOTE_ADDR']
+            );
+            
+
+            // Delete all failed login attempts
+            $stmt = $conn->prepare("DELETE FROM failed_logins WHERE email = ?");
+            $stmt->bind_param("s", $email);
+            $stmt->execute();
+
             // Redirect to the home page after successful login
             if($_SESSION['email'] == "admin@gmail.com"){
                 header("Location: adminhome.php");
@@ -79,11 +132,28 @@ if (isset($_POST['loginBtn'])) {
         } else {
             // Incorrect password
             recordFailedLogin($conn, $email, $failedLogin['failed_attempts'] + 1);
+            logMessage(
+                'WARNING', 
+                'Authorization failed for user: ' . $email, 
+                $userId, 
+                'authentication', 
+                'fail', 
+                $_SERVER['REMOTE_ADDR']
+            );
+            
             header("Location: index.php?error=Invalid Credentials");
             exit();
         }
     } else {
         // User not found
+        logMessage(
+            'WARNING', 
+            'Authorization attempt for non-existent user: ' . $email, 
+            $userId, 
+            'authentication', 
+            'fail', 
+            $_SERVER['REMOTE_ADDR']
+        );
         header("Location: index.php?error=Invalid Credentials");
         exit();
     }
