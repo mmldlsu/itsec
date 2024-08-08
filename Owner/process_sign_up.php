@@ -2,7 +2,7 @@
     date_default_timezone_set('Asia/Manila');
     session_start();
     include '../connect.php';
-
+    include '../config.php';
     // Include the logMessage function
     include '../logfunctions.php';
 
