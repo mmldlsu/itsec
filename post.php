@@ -36,9 +36,12 @@ function getPosts()
     if (!$conn) {
         die("Connection failed: " . mysqli_connect_error());
     }
-
+    
+    logMessage('INFO', 'Attempt by user ' . $_SESSION['email'] . ' Reading of Data from Database Tables Posts' . $email, $usr_id, 'Post Creation', 'Attempted', $client_ip, 'readReqs.log');
     $query = "SELECT posts.*, users.email, users.first_name FROM posts JOIN users ON posts.user_id = users.user_id ORDER BY created_at DESC";
     $result = $conn->query($query);
+    logMessage('INFO', 'Attempt by user ' . $_SESSION['email'] . ' Reading of Data from Database Tables Posts' . $email, $usr_id, 'Post Creation', 'Success', $client_ip, 'readReqs.log');
+    
 
     if (!$result) {
         die("Error executing query: " . $conn->error);
