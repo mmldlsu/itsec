@@ -1,9 +1,11 @@
 <?php
 session_start();
 include 'connect.php'; // Ensure connection is included
+include 'logfunctions.php';
 
 function createPost($userEmail, $content, $numericInput1, $numericInput2)
 {
+    logMessage('INFO', 'User ' . $_SESSION['email'] . ' Attempting to create new post with details: content=' . $content . ', numeric_input1 =' . $numericInput1 . ', numeric_input2 = ' . $numericInput2 , $userId,  'Post Creation', 'Attempt', $client_ip, 'PostCreate.log');
     global $conn;
 
     if (!$conn) {
@@ -24,6 +26,8 @@ function createPost($userEmail, $content, $numericInput1, $numericInput2)
     $stmt->bind_param("isii", $userId, $content, $numericInput1, $numericInput2);
     $stmt->execute();
     $stmt->close();
+    logMessage('INFO', 'User ' . $_SESSION['email'] . 'New Post Created. '  . ' successfully created new post with details: content=' . $content . ', numeric_input1 =' . $numericInput1 . ', numeric_input2 =' . $numericInput2 , $userId,  'Post Creation', 'Success', $client_ip, 'PostCreate.log');
+    logMessage('INFO', 'User ' . $_SESSION['email'] . 'Writing/Adding of Data on Database Tables Post (Appending)'  . ' successfully created new post with details: content=' . $content . ', numeric_input1 =' . $numericInput1 . ', numeric_input2 =' . $numericInput2 , $userId , 'Post Creation', 'Success', $client_ip, 'writeReqs.log');
 }
 
 function getPosts()
