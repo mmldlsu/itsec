@@ -973,3 +973,58 @@ text-align: center;
 		width: 12vw;
 	}
 }
+.profile-view {
+    margin: 5vh 3vw 10vh 10vw;
+    padding: 2vh;
+    width: 85%;
+    box-shadow: 0 10px 20px rgba(0,0,0,0.19), 0 6px 6px rgba(0,0,0,0.23);
+    border-radius: 26px;
+    border-width: 100px;
+    background: var(--btn-info);
+    backdrop-filter: blur(10px);
+    min-width: 220px;
+    height: 100vh;
+}
+
+.profile-view h1 {
+    text-align: center;
+    color: var(--text-primary);
+}
+
+.profile-card {
+    display: grid;
+    grid-template-columns: 1fr 2fr;
+    gap: 1rem;
+    padding: 2rem;
+    background: var(--bg-secondary);
+    border-radius: 26px;
+    box-shadow: 0 10px 20px rgba(0,0,0,0.19), 0 6px 6px rgba(0,0,0,0.23);
+}
+
+.profile-card label {
+    font-weight: bold;
+    color: var(--text-secondary);
+}
+
+.profile-card input {
+    padding: 0.5rem;
+    border-radius: 8px;
+    border: 1px solid var(--btn-primary);
+    background-color: var(--bg-primary);
+    color: var(--text-primary);
+}
+
+.edit-profile-btn {
+    grid-column: span 2;
+    padding: 0.5rem 1rem;
+    border: none;
+    background: var(--btn-primary);
+    color: var(--text-primary);
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background 200ms ease-in-out;
+}
+
+.edit-profile-btn:hover {
+    background: var(--btn-primary-hover);
+}
