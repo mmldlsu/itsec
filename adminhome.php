@@ -1,6 +1,7 @@
 <?php
     session_start();
     include 'connect.php';
+    include 'config.php';
     if(isset($_SESSION['role'])) {
         if ($_SESSION['role'] === 'Chef') header("Location: ../Chef/viewRecipe.php");
         if ($_SESSION['role'] === 'Cashier') header("Location: ../Cashier/cashier.php");
