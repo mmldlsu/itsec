@@ -132,7 +132,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         border: 1px solid #ccc;
         border-radius: 5px;
         font-size: 16px;
-        color: black;
+        color: white;
     }
 
     .profile-card form input[type="file"] {
@@ -203,4 +203,3 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 </body>
 
 </html>
-}

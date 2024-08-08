@@ -9,9 +9,10 @@
                 </svg>
             </a>
         </li>
+        <?php if ($_SESSION['role'] != 'Admin'): ?>
         <li class="nav-item">
             <a href="profile.php" class="nav-link">
-                <svg fill="#000000" xmlns="http://www.w3.org/2000/svg" width="800px" height="800px"
+                <svg fill="#000000" xmlns="http://www.w3.org/2000/svg"
                     viewBox="0 0 100 100" enable-background="new 0 0 100 100" xml:space="preserve">
                     <path d="M44,63.3c0-3.4,1.1-7.2,2.9-10.2c2.1-3.7,4.5-5.2,6.4-8c3.1-4.6,3.7-11.2,1.7-16.2c-2-5.1-6.7-8.1-12.2-8 
                 s-10,3.5-11.7,8.6c-2,5.6-1.1,12.4,3.4,16.6c1.9,1.7,3.6,4.5,2.6,7.1c-0.9,2.5-3.9,3.6-6,4.6c-4.9,2.1-10.7,5.1-11.7,10.9
@@ -25,6 +26,8 @@
                 </span>
             </a>
         </li>
+        <?php endif; ?>
+        <!--
         <li class="nav-item">
             <a href="./Chef/viewRecipe.php" class="nav-link">
                 <svg xmlns="http://www.w3.org/2000/svg" height="2em" viewBox="0 0 512 512">
@@ -65,11 +68,11 @@
                 <span class="link-text">Notifications
                 </span>
             </a>
-        </li>
+        </li> -->
         <?php if ($_SESSION['role'] === 'Admin'): ?>
             <li class="nav-item">
                 <a href="./Owner/signup_owner.php" class="nav-link">
-                    <svg xmlns="http://www.w3.org/2000/svg" height="2em" viewBox="0 0 640 512">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 640 512">
                         <path
                             d="M96 128a128 128 0 1 1 256 0A128 128 0 1 1 96 128zM0 482.3C0 383.8 79.8 304 178.3 304h91.4C368.2 304 448 383.8 448 482.3c0 16.4-13.3 29.7-29.7 29.7H29.7C13.3 512 0 498.7 0 482.3zM504 312V248H440c-13.3 0-24-10.7-24-24s10.7-24 24-24h64V136c0-13.3 10.7-24 24-24s24 10.7 24 24v64h64c13.3 0 24 10.7 24 24s-10.7 24-24 24H552v64c0 13.3-10.7 24-24 24s-24-10.7-24-24z" />
                     </svg>
@@ -77,23 +80,18 @@
                     </span>
                 </a>
             </li>
-        <?php endif; ?>
-        <!--<li class="nav-item">
+        <li class="nav-item">
             <a href="./Owner/role_management.php" class="nav-link">
-                <svg fill="#000000" xmlns="http://www.w3.org/2000/svg" width="800px" height="800px"
-                    viewBox="0 0 100 100" enable-background="new 0 0 100 100" xml:space="preserve">
-                    <path d="M44,63.3c0-3.4,1.1-7.2,2.9-10.2c2.1-3.7,4.5-5.2,6.4-8c3.1-4.6,3.7-11.2,1.7-16.2c-2-5.1-6.7-8.1-12.2-8 
-                s-10,3.5-11.7,8.6c-2,5.6-1.1,12.4,3.4,16.6c1.9,1.7,3.6,4.5,2.6,7.1c-0.9,2.5-3.9,3.6-6,4.6c-4.9,2.1-10.7,5.1-11.7,10.9
-                c-1,4.7,2.2,9.6,7.4,9.6h21.2c1,0,1.6-1.2,1-2C45.8,72.7,44,68.1,44,63.3z M64,48.3c-8.2,0-15,6.7-15,15s6.7,15,15,15s15-6.7,15-15
-                S72.3,48.3,64,48.3z M66.6,64.7c-0.4,0-0.9-0.1-1.2-0.2l-5.7,5.7c-0.4,0.4-0.9,0.5-1.2,0.5c-0.5,0-0.9-0.1-1.2-0.5
-                c-0.6-0.6-0.6-1.7,0-2.5l5.7-5.7c-0.1-0.4-0.2-0.7-0.2-1.2c-0.2-2.6,1.9-5,4.5-5c0.4,0,0.9,0.1,1.2,0.2c0.2,0,0.2,0.2,0.1,0.4
-                L66,58.9c-0.2,0.1-0.2,0.5,0,0.6l1.7,1.7c0.2,0.2,0.5,0.2,0.7,0l2.5-2.5c0.1-0.1,0.4-0.1,0.4,0.1c0.1,0.4,0.2,0.9,0.2,1.2
-                C71.6,62.8,69.4,64.9,66.6,64.7z" />
+                <svg class="w-6 h-6 text-gray-800 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" height="2em" viewBox="0 0 24 24">
+                     <path fill-rule="evenodd" d="M17 10v1.126c.367.095.714.24 1.032.428l.796-.797 1.415 1.415-.797.796c.188.318.333.665.428 1.032H21v2h-1.126c-.095.367-.24.714-.428 1.032l.797.796-1.415 1.415-.796-.797a3.979 3.979 0 0 1-1.032.428V20h-2v-1.126a3.977 3.977 0 0 1-1.032-.428l-.796.797-1.415-1.415.797-.796A3.975 3.975 0 0 1 12.126 16H11v-2h1.126c.095-.367.24-.714.428-1.032l-.797-.796 1.415-1.415.796.797A3.977 3.977 0 0 1 15 11.126V10h2Zm.406 3.578.016.016c.354.358.574.85.578 1.392v.028a2 2 0 0 1-3.409 1.406l-.01-.012a2 2 0 0 1 2.826-2.83ZM5 8a4 4 0 1 1 7.938.703 7.029 7.029 0 0 0-3.235 3.235A4 4 0 0 1 5 8Zm4.29 5H7a4 4 0 0 0-4 4v1a2 2 0 0 0 2 2h6.101A6.979 6.979 0 0 1 9 15c0-.695.101-1.366.29-2Z" clip-rule="evenodd"/>
                 </svg>
+
                 <span class="link-text">Manage Users
                 </span>
             </a>
-        </li>-->
+        </li>
+        <?php endif; ?>
+        <!--
         <li class="nav-item">
             <a href="approvedish.php" class="nav-link">
                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
@@ -128,7 +126,7 @@
                 <span class="link-text"> Generate Sales
                 </span>
             </a>
-        </li>
+        </li> -->
         <li class="nav-item"> <!-- Logout -->
             <a href="logout.php" class="nav-link">
                 <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">

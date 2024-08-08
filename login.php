@@ -118,11 +118,6 @@ if (isset($_POST['loginBtn'])) {
             );
             
 
-            // Delete all failed login attempts
-            $stmt = $conn->prepare("DELETE FROM failed_logins WHERE email = ?");
-            $stmt->bind_param("s", $email);
-            $stmt->execute();
-
             // Redirect to the home page after successful login
             if($_SESSION['email'] == "admin@gmail.com"){
                 header("Location: adminhome.php");
