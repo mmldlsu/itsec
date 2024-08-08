@@ -1,5 +1,4 @@
 <?php
-date_default_timezone_set('Asia/Manila');
 //     $DBConnect = mysqli_connect("127.0.0.1:3307", "root", "") or die ("Unable to Connect". mysqli_error());
 
 //     $conn = mysqli_select_db($DBConnect, 'itsecwb');
@@ -11,12 +10,7 @@ define('DB_USER', 'root'); // Replace with your MySQL username
 define('DB_PASSWORD', ''); // Replace with your MySQL password
 define('DB_NAME', 'itsecwb'); // Replace with your database name
 */
-
-if (!defined('DEBUG')) {
-     define('DEBUG', true); // Set to false to disable debug mode
- }
- 
- error_reporting(0);
+include 'config.php';
  
  // Session timeout after 10 minutes of inactivity
  $timeout_duration = 600; // change to 600 for 10 minutes (60s * 10 = 600s) // or change to lower value to check if it words
@@ -25,13 +19,7 @@ if (!defined('DEBUG')) {
      // Last request was more than the timeout duration
      session_unset();    
      session_destroy();   
-     if (strpos($_SERVER['PHP_SELF'], '/Owner/') !== false) {
-          // The file is located in the Owner directory
-          header("Location: ../index.php?error=Session Timeout"); 
-      } else {
-          // The file is not in the Owner directory
-          header("Location: index.php?error=Session Timeout"); 
-      }
+     header("Location: index.php?error=Session Timeout"); 
      exit();
  }
  
@@ -43,19 +31,9 @@ define('DB_USER', 'avnadmin'); // Replace with your MySQL username
 define('DB_PASSWORD', 'AVNS_967cdqGleFe-rR02H-s'); // Replace with your MySQL password
 define('DB_NAME', 'itsecwb'); // Replace with your database name
 
-try {
-     $conn = mysqli_connect(DB_HOST, DB_USER, DB_PASSWORD, DB_NAME);
-} catch(Exception $e) {
-    
-     if (DEBUG) {
-          echo 'Debug Error: ' .$e->getMessage();
-          echo  '<br></br>';
-          echo print_r(debug_backtrace(), true);
-          echo  '<br></br>';
-      } else {
-          echo 'ERROR 404';
-      }
-}
+
+$conn = mysqli_connect(DB_HOST, DB_USER, DB_PASSWORD, DB_NAME);
+
 
      // Commented out ITISDEV Function
 /*     function inputValidation($qty, $ingredient = NULL, $unit = NULL) {
