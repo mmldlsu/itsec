@@ -37,10 +37,10 @@ function getPosts()
         die("Connection failed: " . mysqli_connect_error());
     }
     
-    logMessage('INFO', 'Attempt by user ' . $_SESSION['email'] . ' Reading of Data from Database Tables Posts' . $email, $usr_id, 'Post Creation', 'Attempted', $client_ip, 'readReqs.log');
+    logMessage('INFO', 'Attempt by user ' . $_SESSION['email'] . ' Reading of Data from Database Tables Posts' . $_SESSION['email'] , $_SESSION['id'], 'Post Creation', 'Attempted', $_SERVER['REMOTE_ADDR'], 'readReqs.log');
     $query = "SELECT posts.*, users.email, users.first_name FROM posts JOIN users ON posts.user_id = users.user_id ORDER BY created_at DESC";
     $result = $conn->query($query);
-    logMessage('INFO', 'Attempt by user ' . $_SESSION['email'] . ' Reading of Data from Database Tables Posts' . $email, $usr_id, 'Post Creation', 'Success', $client_ip, 'readReqs.log');
+    logMessage('INFO', 'Attempt by user ' . $_SESSION['email'] . ' Reading of Data from Database Tables Posts' . $_SESSION['email'] , $_SESSION['id'], 'Post Creation', 'Success', $_SERVER['REMOTE_ADDR'], 'readReqs.log');
     
 
     if (!$result) {
@@ -53,15 +53,64 @@ function getPosts()
 function editPost($postId, $content, $numericInput1, $numericInput2)
 {
     global $conn;
+    $userId = $_SESSION['id']; 
+    $client_ip = $_SERVER['REMOTE_ADDR'];
+    
+    // Fetch the current content and numeric inputs of the post before updating
+    $stmt = $conn->prepare("SELECT content, numeric_input1, numeric_input2 FROM posts WHERE post_id = ?");
+    $stmt->bind_param("i", $postId);
+    $stmt->execute();
+    $stmt->bind_result($oldContent, $oldNumericInput1, $oldNumericInput2);
+    $stmt->fetch();
+    $stmt->close();
+
+    // Log the attempt to edit a post
+    logMessage(
+        'INFO', 
+        'User ' . $_SESSION['email'] . ' is attempting to edit post ID ' . $postId . '. Previous content: "' . $oldContent . '", numeric_input1=' . $oldNumericInput1 . ', numeric_input2=' . $oldNumericInput2 . '. New content: "' . $content . '", numeric_input1=' . $numericInput1 . ', numeric_input2=' . $numericInput2, 
+        $userId,  
+        'Post Edit', 
+        'Attempt', 
+        $client_ip, 
+        'post_edit.log'
+    );
+    
     if (!$conn) {
         die("Connection failed: " . mysqli_connect_error());
     }
 
     $stmt = $conn->prepare("UPDATE posts SET content = ?, numeric_input1 = ?, numeric_input2 = ? WHERE post_id = ?");
-    $stmt->bind_param("siii", $content, $numericInput1, $numericInput2, $postId);
-    $stmt->execute();
-    $stmt->close();
+    if ($stmt) {
+        $stmt->bind_param("siii", $content, $numericInput1, $numericInput2, $postId);
+        $stmt->execute();
+
+        // Log the successful post edit
+        logMessage(
+            'INFO', 
+            'User ' . $_SESSION['email'] . ' successfully edited post ID ' . $postId . '. Previous content: "' . $oldContent . '", numeric_input1=' . $oldNumericInput1 . ', numeric_input2=' . $oldNumericInput2 . '. New content: "' . $content . '", numeric_input1=' . $numericInput1 . ', numeric_input2=' . $numericInput2, 
+            $userId,  
+            'Post Edit', 
+            'Success', 
+            $client_ip, 
+            'post_edit.log'
+        );
+        
+        $stmt->close();
+    } else {
+        // Log the failure to edit the post
+        logMessage(
+            'ERROR', 
+            'User ' . $_SESSION['email'] . ' failed to edit post ID ' . $postId . '. Previous content: "' . $oldContent . '", numeric_input1=' . $oldNumericInput1 . ', numeric_input2=' . $oldNumericInput2 . '. New content: "' . $content . '", numeric_input1=' . $numericInput1 . ', numeric_input2=' . $numericInput2 . '. SQL error: ' . mysqli_error($conn), 
+            $userId,  
+            'Post Edit', 
+            'Failure', 
+            $client_ip, 
+            'post_edit.log'
+        );
+    }
 }
+
+
 
 function deletePost($postId)
 {
