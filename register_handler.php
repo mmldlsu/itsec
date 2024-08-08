@@ -3,6 +3,7 @@
 // Include database connection details
 require_once("connect.php");
 require("logfunctions.php");
+include 'config.php';
 
 // Check if form is submitted
 if (isset($_POST['registerBtn'])) {
