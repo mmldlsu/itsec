@@ -7,6 +7,8 @@ function createPost($userEmail, $content, $numericInput1, $numericInput2)
 {
     logMessage('INFO', 'User ' . $_SESSION['email'] . ' Attempting to create new post with details: content=' . $content . ', numeric_input1 =' . $numericInput1 . ', numeric_input2 = ' . $numericInput2 , $userId,  'Post Creation', 'Attempt', $client_ip, 'PostCreate.log');
     global $conn;
+    $userId = $_SESSION['id']; 
+    $client_ip = $_SERVER['REMOTE_ADDR'];
 
     if (!$conn) {
         die("Connection failed: " . mysqli_connect_error());
@@ -115,15 +117,70 @@ function editPost($postId, $content, $numericInput1, $numericInput2)
 function deletePost($postId)
 {
     global $conn;
+
     if (!$conn) {
         die("Connection failed: " . mysqli_connect_error());
     }
 
-    $stmt = $conn->prepare("DELETE FROM posts WHERE post_id = ?");
+    // Fetch the post details before deletion for logging purposes
+    $stmt = $conn->prepare("SELECT content, numeric_input1, numeric_input2 FROM posts WHERE post_id = ?");
     $stmt->bind_param("i", $postId);
     $stmt->execute();
+    $stmt->bind_result($content, $numericInput1, $numericInput2);
+    $stmt->fetch();
     $stmt->close();
+
+    // Log the deletion attempt with the old post details
+    $userId = $_SESSION['id']; // Assuming this is stored in session
+    $client_ip = $_SERVER['REMOTE_ADDR'];
+    logMessage(
+        'INFO',
+        'User ' . $_SESSION['email'] . ' attempting to delete post with ID=' . $postId . 
+        ',  content=' . $content . 
+        ',  numeric_input1=' . $numericInput1 . 
+        ',  numeric_input2=' . $numericInput2,
+        $userId,
+        'Post Deletion',
+        'Attempt',
+        $client_ip,
+        'PostDelete.log'
+    );
+
+    // Try to delete the post
+    $stmt = $conn->prepare("DELETE FROM posts WHERE post_id = ?");
+    $stmt->bind_param("i", $postId);
+    $success = $stmt->execute();
+    $stmt->close();
+
+    if ($success) {
+        // Log the successful deletion
+        logMessage(
+            'INFO',
+            'User ' . $_SESSION['email'] . ' attempting to delete post with ID=' . $postId . 
+            ',  content=' . $content . 
+            ',  numeric_input1=' . $numericInput1 . 
+            ',  numeric_input2=' . $numericInput2,
+            $userId,
+            'Post Deletion',
+            'Success',
+            $client_ip,
+            'PostDelete.log'
+        );
+    } else {
+        // Log the failure to delete
+        logMessage(
+            'ERROR',
+            'User ' . $_SESSION['email'] . ' failed to delete post with ID=' . $postId,
+            $userId,
+            'Post Deletion',
+            'Failure',
+            $client_ip,
+            'PostDelete.log'
+        );
+    }
 }
+
+
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if (isset($_POST['create_post'])) {
