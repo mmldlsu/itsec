@@ -53,8 +53,7 @@ try {
           echo print_r(debug_backtrace(), true);
           echo  '<br></br>';
       } else {
-          // echo 'ERROR 404';
-          header("Location: index.php?error=ERROR 404");
+          echo 'ERROR 404';
       }
 }
 
