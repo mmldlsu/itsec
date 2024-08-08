@@ -11,19 +11,44 @@ define('DB_PASSWORD', ''); // Replace with your MySQL password
 define('DB_NAME', 'itsecwb'); // Replace with your database name
 */
 
-// cloud db
+if (!defined('DEBUG')) {
+     define('DEBUG', true); // Set to false to disable debug mode
+ }
+ 
+ error_reporting(0);
+ 
+ // Session timeout after 10 minutes of inactivity
+ $timeout_duration = 600; // change to 600 for 10 minutes (60s * 10 = 600s) // or change to lower value to check if it words
+ 
+ if (isset($_SESSION['LAST_ACTIVITY']) && (time() - $_SESSION['LAST_ACTIVITY']) > $timeout_duration) {
+     // Last request was more than the timeout duration
+     session_unset();    
+     session_destroy();   
+     header("Location: index.php?error=Session Timeout"); 
+     exit();
+ }
+ 
+ $_SESSION['LAST_ACTIVITY'] = time(); // Update activity time 
 
+// cloud db
 define('DB_HOST', 'itsecwb-cap-2233.f.aivencloud.com:10849'); // Replace with your MySQL host
 define('DB_USER', 'avnadmin'); // Replace with your MySQL username
 define('DB_PASSWORD', 'AVNS_967cdqGleFe-rR02H-s'); // Replace with your MySQL password
 define('DB_NAME', 'itsecwb'); // Replace with your database name
 
-
-
-$conn = mysqli_connect(DB_HOST, DB_USER, DB_PASSWORD, DB_NAME);
-
-if (!$conn) {
-  die("Connection failed: " . mysqli_connect_error());
+try {
+     $conn = mysqli_connect(DB_HOST, DB_USER, DB_PASSWORD, DB_NAME);
+} catch(Exception $e) {
+    
+     if (DEBUG) {
+          echo 'Debug Error: ' .$e->getMessage();
+          echo  '<br></br>';
+          echo print_r(debug_backtrace(), true);
+          echo  '<br></br>';
+      } else {
+          // echo 'ERROR 404';
+          header("Location: index.php?error=ERROR 404");
+      }
 }
 
      // Commented out ITISDEV Function
