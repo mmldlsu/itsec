@@ -2,6 +2,7 @@
 session_start();
 include '../connect.php';
 include '../logfunctions.php';; // Include your logging function
+include '../config.php';
 
 if (isset($_SESSION['role'])) {
     if ($_SESSION['role'] === 'Chef') header("Location: ../Chef/viewRecipe.php");
