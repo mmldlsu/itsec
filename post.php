@@ -2,6 +2,7 @@
 session_start();
 include 'connect.php'; // Ensure connection is included
 include 'logfunctions.php';
+include 'config.php';
 
 function createPost($userEmail, $content, $numericInput1, $numericInput2)
 {
