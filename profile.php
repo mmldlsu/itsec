@@ -2,6 +2,7 @@
 session_start();
 include 'connect.php';
 include 'logfunctions.php'; // Assuming this is where your logMessage function is
+include 'config.php';
 
 // Check if user is logged in
 if (!isset($_SESSION['email'])) {
