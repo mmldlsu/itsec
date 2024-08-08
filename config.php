@@ -1,5 +1,7 @@
 <?php
 
+include "logfunctions.php";
+
 if (!defined('DEBUG')) {
     define('DEBUG', true); // Set to false to disable debug mode
 }
@@ -23,9 +25,11 @@ function globalErrorHandler($errno, $errstr, $errfile, $errline)
         echo "<pre>" . print_r(debug_backtrace(), true) . "</pre><br>";
     } else {
         error_log($errorMsg, 3, 'error_log.txt');
+
         echo 'An error occurred.';
     }
 
+    logMessage('ERROR', $errorMsg, null, 'Error', 'Failed', $_SERVER['REMOTE_ADDR'], 'error.log');
     return true;
 }
 
@@ -42,6 +46,7 @@ function globalExceptionHandler($exception)
         echo 'An error occurred.';
     }
 
+    logMessage('ERROR', $exceptionMsg, null, 'Exception', 'Failed', $_SERVER['REMOTE_ADDR'], 'error.log');
     exit();
 }
 
