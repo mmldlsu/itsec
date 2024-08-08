@@ -3,7 +3,7 @@ date_default_timezone_set('Asia/Manila');
 session_start();
 include "connect.php";
 include "logfunctions.php";
-
+include 'config.php';
 
 if (isset($_POST['loginBtn'])) {
     $email = mysqli_real_escape_string($conn, $_POST['email']);
