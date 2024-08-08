@@ -5,6 +5,7 @@ if (!session_status()) {
 }
 
 include 'post.php';
+include 'config.php';
 
 if (isset($_SESSION['email'])) {
     ?>
