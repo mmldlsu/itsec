@@ -1,4 +1,5 @@
 <?php
+date_default_timezone_set('Asia/Manila');
 //     $DBConnect = mysqli_connect("127.0.0.1:3307", "root", "") or die ("Unable to Connect". mysqli_error());
 
 //     $conn = mysqli_select_db($DBConnect, 'itsecwb');
@@ -24,7 +25,13 @@ if (!defined('DEBUG')) {
      // Last request was more than the timeout duration
      session_unset();    
      session_destroy();   
-     header("Location: index.php?error=Session Timeout"); 
+     if (strpos($_SERVER['PHP_SELF'], '/Owner/') !== false) {
+          // The file is located in the Owner directory
+          header("Location: ../index.php?error=Session Timeout"); 
+      } else {
+          // The file is not in the Owner directory
+          header("Location: index.php?error=Session Timeout"); 
+      }
      exit();
  }
  
