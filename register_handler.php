@@ -2,6 +2,7 @@
 
 // Include database connection details
 require_once("connect.php");
+require("logfunctions.php");
 
 // Check if form is submitted
 if (isset($_POST['registerBtn'])) {
@@ -10,6 +11,7 @@ if (isset($_POST['registerBtn'])) {
   $email = mysqli_real_escape_string($conn, $_POST['email']);
   $password = mysqli_real_escape_string($conn, $_POST['password']);
 
+  logMessage('INFO', 'Attempting to register user with email: ' . $email . 'first name =' . $firstName . 'last name =' . $lastName, null, 'Account Creation', 'Attempted', $_SERVER['REMOTE_ADDR'], 'account_creation.log');
   $cost = 12; // Adjust cost as needed (higher = slower but more secure) FOR PASSWORD HASH
   $hashed_password = password_hash($password, PASSWORD_ARGON2ID, ['cost' => $cost]);
 
@@ -31,15 +33,18 @@ if (isset($_POST['registerBtn'])) {
       // Proceed with uploading the image
       if (file_exists($targetFile)) {
         $error = "Sorry, file already exists.";  // Set error message
+        logMessage('ERROR', 'File already exists for profile picture: ' . $targetFile, null, 'Account Creation', 'Failed', $_SERVER['REMOTE_ADDR'], 'account_creation.log');
       } else {
         if (move_uploaded_file($_FILES["profile_picture"]["tmp_name"], $targetFile)) {
           $profilePicture = $targetFile;
         } else {
           $error = "Sorry, there was an error uploading your file.";  // Set error message
+          logMessage('ERROR', 'Error uploading profile picture for email: ' . $email, null, 'Account Creation', 'Failed', $_SERVER['REMOTE_ADDR'], 'account_creation.log');
         }
       }
     } else {
       $error = "Only JPG, JPEG & PNG files are allowed.";  // Set error message
+      logMessage('ERROR', 'Invalid file type upload  for profile picture by user with email: ' . $email, null, 'Account Creation', 'Failed', $_SERVER['REMOTE_ADDR'], 'account_creation.log');
     }
   }
 
@@ -49,17 +54,20 @@ if (isset($_POST['registerBtn'])) {
             VALUES ('$firstName', '$lastName','$email', '$hashed_password', '$profilePicture')";
     if ($conn->query($sql) === TRUE) {
       // Registration successful, redirect or display confirmation message
+      logMessage('INFO', 'User registered successfully with email: ' . $email . 'first name =' . $firstName . 'last name =' . $lastName, null, 'Account Creation', 'Success', $_SERVER['REMOTE_ADDR'], 'account_creation.log');
       echo "Registration Successful!"; // Success message displayed in console
       header("Location: index.php"); // Redirect to index.php
       exit();
     } else {
       // Registration failed, display error message
       $error = "Error: " . $sql . "<br>" . $conn->error;
+      logMessage('ERROR', 'Database error during registration for email: ' . $email . '. Error: ' . $conn->error, null, 'Account Creation', 'Failed', $_SERVER['REMOTE_ADDR'], 'account_creation.log');
       header("Location: register.php?error=" . urlencode($error)); // Redirect to register.php with error message
       exit();
     }
   } else {
     // Display any errors encountered during upload or validation
+    logMessage('ERROR', 'Registration failed for email: ' . $email . '. Error: ' . $error, null, 'Account Creation', 'Failed', $_SERVER['REMOTE_ADDR'], 'account_creation.log');
     header("Location: register.php?error=" . urlencode($error)); // Redirect to register.php with error message
     exit();
   }
