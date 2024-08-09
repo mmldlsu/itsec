@@ -49,9 +49,11 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         if (move_uploaded_file($_FILES["profile_image"]["tmp_name"], $target_file)) {
             $profile_image = $target_file; // Use the full path
             logMessage('INFO', 'User ' . $email . ' successfully uploaded profile image: ' . $profile_image, null, 'Profile Update', 'Success', $_SERVER['REMOTE_ADDR'], 'ProfileEdit.log');
+            logUserActivity($conn, $_SESSION['id'], 'Upload profile image', 'Successfully uploaded profile image: ' . $profile_image);
         } else {
             $error_message = "Error uploading file.";
             logMessage('ERROR', 'User ' . $email . ' failed to upload profile image', null, 'Profile Update', 'Failure', $_SERVER['REMOTE_ADDR'], 'ProfileEdit.log');
+            logUserActivity($conn, $_SESSION['id'], 'Upload profile image',  'Failed to upload profile image');
             $profile_image = $old_profile_image; // Use old image in case of error
         }
     } else {
@@ -68,7 +70,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     
     if ($update_stmt->execute()) {
         logMessage('INFO', 'User ' . $email . ' successfully updated profile', $user['user_id'], 'Profile Update', 'Success', $_SERVER['REMOTE_ADDR'], 'ProfileEdit.log');
-        
+        logUserActivity($conn, $_SESSION['id'], 'Update profile',  'Successfully updated profile from: first_name=' . $old_first_name . ', last_name=' . $old_last_name . ', email=' . $old_email . ', profile_image=' . $old_profile_image . ' to: first_name=' . $new_first_name . ', last_name=' . $new_last_name . ', email=' . $new_email . ', profile_image=' . $profile_image, $user['user_id']);
+
         // Update session data
         $_SESSION['email'] = $new_email;
         $_SESSION['profile_image'] = $profile_image;
@@ -80,6 +83,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     } else {
         $error_message = "Error updating profile";
         logMessage('ERROR', 'User ' . $email . ' failed to update profile', $user['user_id'], 'Profile Update', 'Failure', $_SERVER['REMOTE_ADDR'], 'ProfileEdit.log');
+        logUserActivity($conn, $_SESSION['id'], 'Upload profile',  'Failed to upload profile');
     }
 }
 ?>

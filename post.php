@@ -31,6 +31,7 @@ function createPost($userEmail, $content, $numericInput1, $numericInput2)
     $stmt->close();
     logMessage('INFO', 'User ' . $_SESSION['email'] . 'New Post Created. '  . ' successfully created new post with details: content=' . $content . ', numeric_input1 =' . $numericInput1 . ', numeric_input2 =' . $numericInput2 , $userId,  'Post Creation', 'Success', $client_ip, 'PostCreate.log');
     logMessage('INFO', 'User ' . $_SESSION['email'] . 'Writing/Adding of Data on Database Tables Post (Appending)'  . ' successfully created new post with details: content=' . $content . ', numeric_input1 =' . $numericInput1 . ', numeric_input2 =' . $numericInput2 , $userId , 'Post Creation', 'Success', $client_ip, 'writeReqs.log');
+    logUserActivity($conn, $_SESSION['id'], 'New Post', 'Successfully created a new post: content=' . htmlspecialchars($content) . ', numeric_input1=' . htmlspecialchars($numericInput1) . ', numeric_input2=' . htmlspecialchars($numericInput2));
 }
 
 function getPosts()
@@ -97,6 +98,8 @@ function editPost($postId, $content, $numericInput1, $numericInput2)
             $client_ip, 
             'post_edit.log'
         );
+
+        logUserActivity($conn, $_SESSION['id'], 'Edit Post', 'Successfully edited post ID ' . $postId . '. Previous content: "' . $oldContent . '", numeric_input1=' . $oldNumericInput1 . ', numeric_input2=' . $oldNumericInput2 . '. New content: "' . $content . '", numeric_input1=' . $numericInput1 . ', numeric_input2=' . $numericInput2);
         
         $stmt->close();
     } else {
@@ -110,6 +113,8 @@ function editPost($postId, $content, $numericInput1, $numericInput2)
             $client_ip, 
             'post_edit.log'
         );
+
+        logUserActivity($conn, $_SESSION['id'], 'Edit Post', 'Successfully edited post ID ' . $postId . '. Previous content: "' . $oldContent . '", numeric_input1=' . $oldNumericInput1 . ', numeric_input2=' . $oldNumericInput2 . '. New content: "' . $content . '", numeric_input1=' . $numericInput1 . ', numeric_input2=' . $numericInput2);
     }
 }
 
@@ -167,6 +172,8 @@ function deletePost($postId)
             $client_ip,
             'PostDelete.log'
         );
+
+        logUserActivity($conn, $_SESSION['id'], 'Delete Post', 'Successfully deleted post with ID=' . $postId . ',  content=' . $content . ',  numeric_input1=' . $numericInput1 . ',  numeric_input2=' . $numericInput2);
     } else {
         // Log the failure to delete
         logMessage(
@@ -178,6 +185,8 @@ function deletePost($postId)
             $client_ip,
             'PostDelete.log'
         );
+
+        logUserActivity($conn, $_SESSION['id'], 'Delete Post', 'Failed to elete post with ID=' . $postId);
     }
 }
 

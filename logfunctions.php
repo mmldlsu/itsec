@@ -38,5 +38,17 @@ function logMessage($level, $message, $usr_id = null, $evt_category = null, $evt
        }
    }
 
+function logUserActivity($conn, $userId, $action, $details) {
+    $ipAddress = $_SERVER['REMOTE_ADDR'];
+    error_log($ipAddress);
+    error_log($userId);
+    error_log($action);
+    error_log($details);
+    $timestamp = date('Y-m-d H:i:s');  // Get current date and time
+
+    $stmt = $conn->prepare("INSERT INTO activity_logs (user_id, action, timestamp, ip_address, details) VALUES (?, ?, ?, ?, ?)");
+    $stmt->bind_param("issss", $userId, $action, $timestamp, $ipAddress, $details);
+    $stmt->execute();
+} 
 
 ?>

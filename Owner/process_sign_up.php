@@ -34,17 +34,18 @@
                         // Log successful account creation
                         logMessage('INFO', 'User ' . $_SESSION['email'] . ' successfully created new account with details: Email=' . $email . ', First Name=' . $firstName . ', Last Name=' . $lastName . ', Role=' . $role, $usr_id, 'Account Creation', 'Success', $client_ip, 'account_creation.log');
                         logMessage('INFO', 'User ' . $_SESSION['email'] . 'Writing/Adding of Data on Database Tables Users (Appending)'  . ' successfully created new account with details: Email=' . $email . ', First Name=' . $firstName . ', Last Name=' . $lastName . ', Role=' . $role, $usr_id, 'Account Creation', 'Success', $client_ip, 'writeReqs.log');
+                        logUserActivity($conn, $_SESSION['id'] , 'Account Creation', 'Successfully created new account with details: Email=' . $email . ', First Name=' . $firstName . ', Last Name=' . $lastName . ', Role=' . $role, $usr_id);
                         header("Location: role_management.php");
                     } else {
                         // Log error if account creation failed
                         logMessage('ERROR', 'User ' . $_SESSION['email'] . ' Failed to create new account for ' . $email . '. MySQL error: ' . mysqli_error($conn), $usr_id, 'Account Creation', 'Failure', $client_ip, 'account_creation.log');
-
+                        logUserActivity($conn, $_SESSION['id'] , 'Account Creation', 'Failed to create new account for ' . $email . '. MySQL error: ' . mysqli_error($conn));
                         header("Location: adminhome.php?error=Account creation failed");
                     }
                 } else {
                     // Log password mismatch error
                     logMessage('ERROR', 'User ' . $_SESSION['email'] . ' Password mismatch for new account creation attempt for  ' .$email, $usr_id, 'Account Creation', 'Failure - Password Mismatch', $client_ip, 'account_creation.log');
-
+                    logUserActivity($conn, $_SESSION['id'] , 'Account Creation', ' Password mismatch for new account creation attempt for  ' .$email, $usr_id);
                     header("Location: adminhome.php?error=Passwords do not match");
                 }
             }

@@ -59,6 +59,7 @@ if (isset($_POST['loginBtn'])) {
         // User found, check password
         $user = $result->fetch_assoc();
         $hashedPassword = $user['password'];
+        $userId = $user['user_id'];
 
         if (password_verify($upass, $hashedPassword)) {
             // Authentication successful
@@ -80,9 +81,10 @@ if (isset($_POST['loginBtn'])) {
                 $_SERVER['REMOTE_ADDR']
             );
             
+            logUserActivity($conn, $_SESSION['id'], 'Authorization', 'Authorization successful for user ID: ' . $_SESSION['id']);
 
             // Redirect to the home page after successful login
-            if($_SESSION['email'] == "admin@gmail.com"){
+            if($_SESSION['role'] === "Admin"){
                 header("Location: adminhome.php");
             }
             else{
@@ -99,6 +101,8 @@ if (isset($_POST['loginBtn'])) {
                 'fail', 
                 $_SERVER['REMOTE_ADDR']
             );
+
+            logUserActivity($conn, $userId, 'Authorization', 'Authorization failed for user ID: ' . $userId);
             
             header("Location: index.php?error=Invalid Credentials");
             exit();
@@ -113,6 +117,9 @@ if (isset($_POST['loginBtn'])) {
             'fail', 
             $_SERVER['REMOTE_ADDR']
         );
+
+        logUserActivity($conn, -1 , 'Authorization', 'Authorization attempt for non-existent user: ' . $email);
+        
         header("Location: index.php?error=Invalid Credentials");
         exit();
     }

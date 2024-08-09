@@ -56,6 +56,7 @@ if (isset($_POST['registerBtn'])) {
     if ($conn->query($sql) === TRUE) {
       // Registration successful, redirect or display confirmation message
       logMessage('INFO', 'User registered successfully with email: ' . $email . 'first name =' . $firstName . 'last name =' . $lastName, null, 'Account Creation', 'Success', $_SERVER['REMOTE_ADDR'], 'account_creation.log');
+      logUserActivity($conn, -1 , 'User Registration', 'User registered successfully with email: ' . $email . 'first name =' . $firstName . 'last name =' . $lastName);
       echo "Registration Successful!"; // Success message displayed in console
       header("Location: index.php"); // Redirect to index.php
       exit();
@@ -63,12 +64,14 @@ if (isset($_POST['registerBtn'])) {
       // Registration failed, display error message
       $error = "Error: " . $sql . "<br>" . $conn->error;
       logMessage('ERROR', 'Database error during registration for email: ' . $email . '. Error: ' . $conn->error, null, 'Account Creation', 'Failed', $_SERVER['REMOTE_ADDR'], 'account_creation.log');
+      logUserActivity($conn, -1 , 'User Registration', 'Database error during registration for email: ' . $email . '. Error: ' . $conn->error);
       header("Location: register.php?error=" . urlencode($error)); // Redirect to register.php with error message
       exit();
     }
   } else {
     // Display any errors encountered during upload or validation
     logMessage('ERROR', 'Registration failed for email: ' . $email . '. Error: ' . $error, null, 'Account Creation', 'Failed', $_SERVER['REMOTE_ADDR'], 'account_creation.log');
+    logUserActivity($conn, -1 , 'User Registration', 'Registration failed for email: ' . $email . '. Error: ' . $error);
     header("Location: register.php?error=" . urlencode($error)); // Redirect to register.php with error message
     exit();
   }

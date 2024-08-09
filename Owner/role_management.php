@@ -31,7 +31,7 @@ if (isset($_SESSION['role'])) {
                 // Log the role change and update request to the database
                 logMessage('INFO', 'User ' . $_SESSION['email'] . ' Updating  of Data on Database Tables Users (Replacing)'  . ' successfully updated account with ID:' . $employeeid . ' from ' . $currentRole . ' to ' . $newrole, $usr_id, 'Role Change',  'Success', $client_ip, 'UpdateReqs.log');
                 logMessage('INFO', 'User ' . $usr_id . ' changed role for user ID ' . $employeeid . ' from ' . $currentRole . ' to ' . $newrole, $usr_id, 'Role Change', 'Success', $client_ip, 'account_changes.log');
-                
+                logUserActivity($conn, $_SESSION['id'] , 'Change of User Role', 'User ' . $usr_id . ' changed role for user ID ' . $employeeid . ' from ' . $currentRole . ' to ' . $newrole, $usr_id);
             }
 
             if (isset($_POST['terminate'])) {
@@ -39,7 +39,7 @@ if (isset($_SESSION['role'])) {
 
                 // Log the account deactivation
                 logMessage('INFO', 'User ' . $usr_id . ' deactivated account for user ID ' . $employeeid . ' with role ' . $currentRole, $usr_id, 'Account Deactivation', 'Success', $client_ip, 'account_deactivation.log');
-
+                logUserActivity($conn, $_SESSION['id'] , 'Account Deactivation' ,'User ' . $usr_id . ' deactivated account for user ID ' . $employeeid . ' with role ' . $currentRole, $usr_id, 'Account Deactivation');
                 echo '<script>window.location.href = "role_management.php";</script>';
             }
         }
